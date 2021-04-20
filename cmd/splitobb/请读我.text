@@ -1,0 +1,12 @@
+1 把一个大的 apk 包导成小 apk 和 obb 包命令：
+python [outputobb.py的全路径] --apk [大apk包全路径] --vcode [android包内的版本号] --bversion [wallet的版本号] --output [输出路径]
+举例：
+python /Users/playcrab/Music/outputobb.py --apk /Users/playcrab/Downloads/2166-dnyrelease.apk --vcode 14 --bversion 2166 --output ~/
+
+2 把obb包导入到手机里
+adb push obb包的全路径 /sdcard/Android/obb/com.onepunchman.ggplay.sea/obb包的名字
+举例：
+adb push /Users/playcrab/main.14.com.onepunchman.ggplay.sea.obb /sdcard/Android/obb/com.onepunchman.ggplay.sea/main.14.com.onepunchman.ggplay.sea.obb
+
+3 注意事项：
+obb 包名字带的数字得跟 apk 一一对应
