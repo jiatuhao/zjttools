@@ -16,6 +16,9 @@ sys.setdefaultencoding('utf-8')
 global select_list
 select_list = {
     "越南": {
+        "info":{
+            "code": "kosvn"
+        },
         "autotag": {
             "desc": "越南自动打tag",
             "template":{
@@ -26,17 +29,46 @@ select_list = {
                 }
             }
         },
+        "initpacker": {
+            "desc": "初始化内网打包机",
+            "template":{
+                "edit":{
+                    "参数1":"默认值",
+                }
+            }
+        },
     },
     "港澳台东南亚":{
+        "info":{
+            "code": "kosdt"
+        },
         "autotag": {
             "desc": "港澳台东南亚自动打tag",
             "template":{
                 "link":{
-                    "主干":"http://10.2.181.147:9011?master",
-                    "分支":"http://10.2.181.147:9011?preonline",
-                    "online":"http://10.2.181.147:9011?online",
+                    "lua主干":"http://10.2.181.147:9011?tag:kosdt_master",
+                    "lua分支":"http://10.2.181.147:9011?tag:kosdt_preonline",
+                    "lua线上":"http://10.2.181.147:9011?tag:kosdt_newonline",
                 }
             }
+        },
+        "initpacker": {
+            "desc": "初始化内网打包机",
+            "template":{
+                "edit":{
+                    "ip(内网打包机ip)":"10.2.181.147",
+                    "url(内网打包机钉钉tag提醒网址)":"https://oapi.dingtalk.com/robot/send?access_token=6bea31231b6b645838e8c3db433683fef297deb42ee543497534f407781d6395",
+                    "luapath(内网打包机lua目录绝对路径)":"/Users/playcrab/Documents/svn/koslua"
+                }
+            },
+            "cmd":{
+                "script":"initpacker/initpacker.py",
+                "request_params":[
+                    "ip",
+                    "url",
+                    "luapath",
+                ]
+            },
         },
     }
 }
@@ -127,12 +159,5 @@ select_list = {
 #         ]
 #     },
 # },
-# "initpacker": {
-#     "desc": "初始化内网打包机",
-#     "template":{
-#         "edit":{
-#             "参数1":"默认值",
-#         }
-#     }
-# },
+
 

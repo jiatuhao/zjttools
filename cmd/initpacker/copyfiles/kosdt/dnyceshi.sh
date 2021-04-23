@@ -1,0 +1,2 @@
+cd /Users/playcrab/Documents/svn/kosdt/kosres
+xrun synclocal -b dnyceshi -d /Users/playcrab/Documents/svn/kosdt/data/branch/branch.tishen.en -r /Users/playcrab/Documents/svn/kosdt/kosres -o /Users/playcrab/Documents/svn/kosdt/DNYTestEnvironment/Resources -l kosdt_master --updatalua --updatadata --updatares --comitsvn --dingding

@@ -1,0 +1,1 @@
+python ./kosdt.py

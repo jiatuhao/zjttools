@@ -1,0 +1,2 @@
+cd /Users/playcrab/Documents/svn/kosdt/kosres_online_tw
+xrun synclocal -b onlinetw -d /Users/playcrab/Documents/svn/kosdt/data/online/online.20200723 -r /Users/playcrab/Documents/svn/kosdt/kosres_online_tw -o /Users/playcrab/Documents/svn/kosdt/DTonlineEnvironment_tw/Resources -l kosdt_newonline_tw --updatalua --updatadata --updatares --comitsvn --dingding

@@ -134,9 +134,9 @@ class Logging:
     def _print(s, color=None):
         if color and __ISATTY__ and sys.platform != 'win32':
             # print color + s + Logging.RESET, 
-            print s
+            print(s)
         else:
-            print s
+            print(s)
 
     @staticmethod
     def debug(s):
@@ -164,6 +164,18 @@ class StdoutRedirector(object):
     def write(self, str):
         self.text_area.insert(END, str)
         self.text_area.see(END)
+
+def run_shell(shell):
+    cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+                           stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
+    # 实时输出
+    while True:
+        line = cmd.stdout.readline()
+        Logging.info(line)
+        if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
+            break
+
+    return cmd.returncode
 
 class TkCocosDialog(Frame):
     def clear_nodes(self):
@@ -231,9 +243,9 @@ class TkCocosDialog(Frame):
                     str_list = text.split("(")
                     params[str_list[0]] = info["node_str"].get()
             
-            if select_list[self._select_key].has_key("cmd"):
+            if select_list[self._select_project][self._select_key].has_key("cmd"):
                 flag = False
-                cmd_info = select_list[self._select_key]["cmd"]
+                cmd_info = select_list[self._select_project][self._select_key]["cmd"]
                 if cmd_info.has_key("request_params"):
                     for k in cmd_info["request_params"]:
                         if params.has_key(k) == None or params[k] == "":
@@ -247,10 +259,17 @@ class TkCocosDialog(Frame):
                     params_str = ""
                     for k in params:
                         params_str=params_str+" --"+k+" "+params[k]
+                    params_str=params_str+" --"+"code"+" "+select_list[self._select_project]["info"]["code"]
                     cmd_str = "python "+path+params_str
-                    Logging.info("开始运行脚本"+cmd_str)
-                    ret = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    Logging.info(ret.stdout.readlines())
+                    Logging.info("开始运行脚本:"+cmd_str)
+                    Logging.info("运行中......")
+                    run_shell(cmd_str)
+                    Logging.info("运行结束!")
+
+                    # ret = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    # for line in ret.stdout.readlines(): 
+                    #     line = line.strip()
+                    #     Logging.info(line)
         return click_func
 
     def select_project(self):
@@ -267,10 +286,9 @@ class TkCocosDialog(Frame):
 
         win = self.parent
 
-        label1 = ttk.Label(win, text="").grid(column=0, row=0)    # 添加一个标签，并将其列设置为1，行设置为0
-        self._other_nodes.append(label1)
 
-        label2 = ttk.Label(win, text="选择项目:").grid(column=1, row=3)    # 添加一个标签，并将其列设置为1，行设置为0
+        label2 = ttk.Label(win, text="选择项目:")
+        label2.grid(column=1, row=3)    # 添加一个标签，并将其列设置为1，行设置为0
         self._other_nodes.append(label2)
         number = StringVar()
         numberChosen1 = ttk.Combobox(win, width=60, textvariable=StringVar())
@@ -296,13 +314,14 @@ class TkCocosDialog(Frame):
         def go(*args):  #处理事件，*args表示可变参数
             select_str = numberChosen.get()
             for k in new_select_list:
-                if new_select_list[k]["desc"] == select_str:
+                if k != "info" and new_select_list[k]["desc"] == select_str:
                     Logging.info("选择了："+select_str)
                     self._select_key = k
                     self.clear_nodes()
                     self._click_func = self.create_nodes(win, new_select_list[k])
 
-        label5 = ttk.Label(win, text="选择命令:").grid(column=0, row=0)    # 添加一个标签，并将其列设置为1，行设置为0
+        label5 = ttk.Label(win, text="选择命令:")
+        label5.grid(column=0, row=0)    # 添加一个标签，并将其列设置为1，行设置为0
         self._other_nodes.append(label5)
         number = StringVar()
         numberChosen = ttk.Combobox(win, width=60, textvariable=StringVar())
@@ -312,7 +331,8 @@ class TkCocosDialog(Frame):
 
         info = []
         for k in new_select_list:
-            info.append(new_select_list[k]["desc"])
+            if k != "info":
+                info.append(new_select_list[k]["desc"])
         numberChosen['values'] = info     # 设置下拉列表的值
         numberChosen.grid(column=1, row=0)      # 设置其在界面中出现的位置  column代表列   row 代表行
 
@@ -342,6 +362,11 @@ class TkCocosDialog(Frame):
         action1 = ttk.Button(win, text="回到上一层", command=back)     # 创建一个按钮, text：显示按钮上面显示的文字, command：当这个按钮被点击之后会调用command函数
         action1.grid(column=  15, row=0)    # 设置其在界面中出现的位置  column代表列   row 代表行
         self._other_nodes.append(action1)
+
+        self._project_label = ttk.Label(win, text="当前项目是:"+self._select_project)
+        self._project_label.grid(column=17, row=0)    # 添加一个标签，并将其列设置为1，行设置为0
+        self._other_nodes.append(self._project_label)
+
 
         sys.stdout = StdoutRedirector(self.text)
     def __init__(self, parent):
